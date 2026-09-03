@@ -1,0 +1,93 @@
+public class Proceso {
+    String nombre;
+    int tiempoRestante;
+    Proceso siguiente;
+ 
+    Proceso(String nombre, int tiempoRestante) {
+        this.nombre = nombre;
+        this.tiempoRestante = tiempoRestante;
+        this.siguiente = null;
+    }
+}
+
+
+public class ListaRoundRobin {
+ 
+    Proceso ultimo; // ultimo.siguiente = primero
+    int contador = 0;
+    final int QUANTUM = 2;
+ 
+    public boolean estaVacia() { return ultimo == null; }
+ 
+    public void insertarProceso(String nombre, int tiempo) {
+        Proceso nuevo = new Proceso(nombre, tiempo);
+        if (estaVacia()) {
+            ultimo = nuevo;
+            nuevo.siguiente = nuevo;
+        } else {
+            nuevo.siguiente = ultimo.siguiente;
+            ultimo.siguiente = nuevo;
+            ultimo = nuevo;
+        }
+        contador++;
+    }
+ 
+    public void mostrarEstado() {
+        if (estaVacia()) {
+            System.out.println("   (No quedan procesos en la lista)");
+            return;
+        }
+        Proceso actual = ultimo.siguiente;
+        System.out.print("   Cola actual: ");
+        do {
+            System.out.print("[" + actual.nombre + ":" + actual.tiempoRestante + "] ");
+            actual = actual.siguiente;
+        } while (actual != ultimo.siguiente);
+        System.out.println();
+    }
+ 
+    public void simular() {
+        int turno = 1;
+        while (!estaVacia()) {
+            Proceso actual = ultimo.siguiente;
+            System.out.println("\n--- Turno " + turno + " ---");
+            System.out.println("Ejecutando: " + actual.nombre);
+ 
+            int tiempoEjecutado = Math.min(QUANTUM, actual.tiempoRestante);
+            actual.tiempoRestante -= tiempoEjecutado;
+ 
+            if (actual.tiempoRestante == 0) {
+                System.out.println(actual.nombre + " ha TERMINADO y se elimina.");
+                eliminarActual();
+            } else {
+                System.out.println(actual.nombre + " no terminó, vuelve al final.");
+                ultimo = actual; // O(1): solo movemos el puntero "ultimo"
+            }
+            mostrarEstado();
+            turno++;
+        }
+        System.out.println("\nTodos los procesos han finalizado.");
+    }
+ 
+    private void eliminarActual() {
+        if (contador == 1) { ultimo = null; contador = 0; return; }
+        Proceso primero = ultimo.siguiente;
+        ultimo.siguiente = primero.siguiente;
+        contador--;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        ListaRoundRobin cola = new ListaRoundRobin();
+        cola.insertarProceso("P1", 5);
+        cola.insertarProceso("P2", 3);
+        cola.insertarProceso("P3", 7);
+        cola.insertarProceso("P4", 2);
+ 
+        System.out.println("Estado inicial de la lista:");
+        cola.mostrarEstado();
+        cola.simular();
+    }
+}
+
