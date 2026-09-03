@@ -1,0 +1,80 @@
+public class Nodo {
+    int dato;
+    Nodo siguiente;
+ 
+    Nodo(int dato) {
+        this.dato = dato;
+        this.siguiente = null;
+    }
+}
+
+
+public class ListaCircular {
+ 
+    Nodo primero;
+    Nodo ultimo;
+    int contador = 0;
+ 
+    public boolean estaVacia() {
+        return primero == null;
+    }
+ 
+    public void insertarInicio(int dato) {
+        Nodo nuevo = new Nodo(dato);
+        if (estaVacia()) {
+            primero = nuevo;
+            ultimo = nuevo;
+        } else {
+            nuevo.siguiente = primero;
+            primero = nuevo;
+        }
+        ultimo.siguiente = primero;
+        contador++;
+    }
+ 
+    public void insertarFinal(int dato) {
+        Nodo nuevo = new Nodo(dato);
+        if (estaVacia()) {
+            primero = nuevo;
+            ultimo = nuevo;
+        } else {
+            ultimo.siguiente = nuevo;
+            ultimo = nuevo;
+        }
+        ultimo.siguiente = primero;
+        contador++;
+    }
+ 
+    public void mostrar() {
+        if (estaVacia()) {
+            System.out.println("La lista está vacía.");
+            return;
+        }
+        Nodo actual = primero;
+        System.out.print("Lista circular: ");
+        do {
+            System.out.print(actual.dato + " -> ");
+            actual = actual.siguiente;
+        } while (actual != primero);
+        System.out.println("(vuelve al inicio)");
+    }
+ 
+    public int contarElementos() {
+        return contador;
+    }
+}
+
+
+public class Main {
+    public static void main(String[] args) {
+        ListaCircular lista = new ListaCircular();
+        System.out.println("¿Lista vacía? " + lista.estaVacia());
+        lista.insertarFinal(10);
+        lista.insertarFinal(20);
+        lista.insertarInicio(5);
+        lista.insertarFinal(30);
+        lista.mostrar();
+        System.out.println("Número de elementos: " + lista.contarElementos());
+        System.out.println("¿Lista vacía? " + lista.estaVacia());
+    }
+}
