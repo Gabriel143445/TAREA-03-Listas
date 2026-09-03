@@ -1,0 +1,70 @@
+public class Persona {
+    int numero;
+    Persona siguiente;
+ 
+    Persona(int numero) {
+        this.numero = numero;
+        this.siguiente = null;
+    }
+}
+
+
+public class Josephus {
+ 
+    Persona ultimo; // ultimo.siguiente = primero
+    int contador = 0;
+ 
+    public boolean estaVacia() { return ultimo == null; }
+ 
+    public void crearCirculo(int n) {
+        for (int i = 1; i <= n; i++) { insertarPersona(i); }
+    }
+ 
+    private void insertarPersona(int numero) {
+        Persona nueva = new Persona(numero);
+        if (estaVacia()) {
+            ultimo = nueva;
+            nueva.siguiente = nueva;
+        } else {
+            nueva.siguiente = ultimo.siguiente;
+            ultimo.siguiente = nueva;
+            ultimo = nueva;
+        }
+        contador++;
+    }
+ 
+    public void resolver(int k) {
+        System.out.println("\nOrden de eliminación:");
+        Persona actual = ultimo.siguiente;
+ 
+        while (contador > 1) {
+            Persona anterior = actual;
+            for (int i = 1; i < k; i++) {
+                anterior = actual;
+                actual = actual.siguiente;
+            }
+            System.out.print(actual.numero + " ");
+            if (actual == ultimo) { ultimo = anterior; }
+            anterior.siguiente = actual.siguiente;
+            contador--;
+            actual = anterior.siguiente;
+        }
+        System.out.println("\n\nSobreviviente: Persona #" + actual.numero);
+    }
+
+
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("=== Caso 1: n = 5, k = 2 ===");
+        Josephus caso1 = new Josephus();
+        caso1.crearCirculo(5);
+        caso1.resolver(2);
+ 
+        System.out.println("\n=== Caso 2: n = 7, k = 3 ===");
+        Josephus caso2 = new Josephus();
+        caso2.crearCirculo(7);
+        caso2.resolver(3);
+    }
+}
+
+}
