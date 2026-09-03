@@ -1,0 +1,182 @@
+public class Cancion {
+    String nombre;
+    Cancion siguiente;
+
+    Cancion(String nombre) {
+        this.nombre = nombre;
+        this.siguiente = null;
+    }
+}
+
+
+public class Playlist {
+
+    Cancion primero;
+    Cancion ultimo;
+    Cancion actual; // apunta a la canción que se está reproduciendo
+    int contador = 0;
+
+    public boolean estaVacia() {
+        return primero == null;
+    }
+
+    // Agregar canción al inicio
+    public void agregarInicio(String nombre) {
+        Cancion nueva = new Cancion(nombre);
+
+        if (estaVacia()) {
+            primero = nueva;
+            ultimo = nueva;
+            actual = nueva; // la primera canción agregada empieza siendo la "actual"
+        } else {
+            nueva.siguiente = primero;
+            primero = nueva;
+        }
+
+        ultimo.siguiente = primero;
+        contador++;
+    }
+
+    // Agregar canción al final
+    public void agregarFinal(String nombre) {
+        Cancion nueva = new Cancion(nombre);
+
+        if (estaVacia()) {
+            primero = nueva;
+            ultimo = nueva;
+            actual = nueva;
+        } else {
+            ultimo.siguiente = nueva;
+            ultimo = nueva;
+        }
+
+        ultimo.siguiente = primero;
+        contador++;
+    }
+
+    // Mostrar la playlist completa, señalando cuál se está reproduciendo
+    public void mostrarPlaylist() {
+        if (estaVacia()) {
+            System.out.println("La playlist está vacía.");
+            return;
+        }
+
+        Cancion nodo = primero;
+        System.out.println("Playlist:");
+        do {
+            String marca = (nodo == actual) ? "  <-- reproduciendo" : "";
+            System.out.println("   - " + nodo.nombre + marca);
+            nodo = nodo.siguiente;
+        } while (nodo != primero);
+    }
+
+    // Avanza y reproduce la siguiente canción (vuelve al inicio automáticamente si es necesario)
+    public void reproducirSiguiente() {
+        if (estaVacia()) {
+            System.out.println("No hay canciones en la playlist.");
+            return;
+        }
+
+        actual = actual.siguiente; // gracias a ser circular, si estaba en la última, pasa a la primera solo
+        System.out.println("Reproduciendo ahora: " + actual.nombre);
+    }
+
+    // Eliminar una canción por nombre
+    public void eliminarPorNombre(String nombre) {
+        if (estaVacia()) {
+            System.out.println("La playlist está vacía.");
+            return;
+        }
+
+        // Caso: una sola canción
+        if (contador == 1) {
+            if (primero.nombre.equals(nombre)) {
+                primero = null;
+                ultimo = null;
+                actual = null;
+                contador = 0;
+                System.out.println("Canción eliminada. La playlist quedó vacía.");
+            } else {
+                System.out.println("Canción no encontrada.");
+            }
+            return;
+        }
+
+        Cancion anterior = ultimo;
+        Cancion nodo = primero;
+
+        do {
+            if (nodo.nombre.equals(nombre)) {
+                anterior.siguiente = nodo.siguiente;
+
+                if (nodo == primero) primero = nodo.siguiente;
+                if (nodo == ultimo) ultimo = anterior;
+                if (nodo == actual) actual = nodo.siguiente; // si borramos la que sonaba, pasamos a la siguiente
+
+                contador--;
+                System.out.println("Canción '" + nombre + "' eliminada.");
+                return;
+            }
+            anterior = nodo;
+            nodo = nodo.siguiente;
+        } while (nodo != primero);
+
+        System.out.println("Canción no encontrada.");
+    }
+
+import java.util.Scanner;
+public class Main {
+    public static void main(String[] args) {
+      Playlist playlist = new Playlist();
+        Scanner scanner = new Scanner(System.in);
+        int opcion;
+        do {
+            System.out.println("\n===== PLAYLIST CIRCULAR =====");
+            System.out.println("1. Agregar canción al inicio");
+            System.out.println("2. Agregar canción al final");
+            System.out.println("3. Mostrar playlist completa");
+            System.out.println("4. Reproducir siguiente canción");
+            System.out.println("5. Eliminar canción por nombre");
+            System.out.println("6. Salir");
+            System.out.print("Elige una opción: ");
+            opcion = Integer.parseInt(scanner.nextLine());
+            switch (opcion) {
+                case 1:
+                    System.out.print("Nombre de la canción: ");
+                    playlist.agregarInicio(scanner.nextLine());
+                    break;
+
+                case 2:
+                    System.out.print("Nombre de la canción: ");
+                    playlist.agregarFinal(scanner.nextLine());
+                    break;
+
+                case 3:
+                    playlist.mostrarPlaylist();
+
+                    break;
+
+                case 4:
+                    playlist.reproducirSiguiente();
+                    break;
+
+                case 5:
+                    System.out.print("Nombre de la canción a eliminar: ");
+                    playlist.eliminarPorNombre(scanner.nextLine());
+                    break;
+
+                case 6:
+                    System.out.println("Cerrando reproductor...");
+                    break;
+
+                default:
+                    System.out.println("Opción no válida.");
+            }
+
+        } while (opcion != 6);
+
+        scanner.close();
+    }
+}
+
+}
