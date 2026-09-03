@@ -65,16 +65,67 @@ public class ListaCircular {
 }
 
 
+import java.util.Scanner;
+
 public class Main {
     public static void main(String[] args) {
         ListaCircular lista = new ListaCircular();
-        System.out.println("¿Lista vacía? " + lista.estaVacia());
-        lista.insertarFinal(10);
-        lista.insertarFinal(20);
-        lista.insertarInicio(5);
-        lista.insertarFinal(30);
-        lista.mostrar();
-        System.out.println("Número de elementos: " + lista.contarElementos());
-        System.out.println("¿Lista vacía? " + lista.estaVacia());
+        Scanner scanner = new Scanner(System.in);
+        int opcion;
+
+        do {
+            System.out.println("\n===== MENÚ - LISTA CIRCULAR =====");
+            System.out.println("1. Insertar al inicio");
+            System.out.println("2. Insertar al final");
+            System.out.println("3. Mostrar todos los elementos");
+            System.out.println("4. Verificar si la lista está vacía");
+            System.out.println("5. Contar número de elementos");
+            System.out.println("6. Salir");
+            System.out.print("Elige una opción: ");
+            opcion = Integer.parseInt(scanner.nextLine());
+
+            switch (opcion) {
+                case 1:
+                    System.out.print("Ingresa el dato a insertar al inicio: ");
+                    int datoInicio = Integer.parseInt(scanner.nextLine());
+                    lista.insertarInicio(datoInicio);
+                    System.out.println("Elemento insertado al inicio.");
+                    break;
+
+                case 2:
+                    System.out.print("Ingresa el dato a insertar al final: ");
+                    int datoFinal = Integer.parseInt(scanner.nextLine());
+                    lista.insertarFinal(datoFinal);
+                    System.out.println("Elemento insertado al final.");
+
+                    break;
+
+                case 3:
+                    lista.mostrar();
+                    break;
+
+                case 4:
+                    if (lista.estaVacia()) {
+                        System.out.println("La lista está vacía.");
+                    } else {
+                        System.out.println("La lista NO está vacía.");
+                    }
+                    break;
+
+                case 5:
+                    System.out.println("Número de elementos: " + lista.contarElementos());
+                    break;
+
+                case 6:
+                    System.out.println("Saliendo del programa...");
+                    break;
+
+                default:
+                    System.out.println("Opción no válida, intenta de nuevo.");
+            }
+
+        } while (opcion != 6);
+
+        scanner.close();
     }
 }
