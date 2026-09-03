@@ -1,79 +1,299 @@
-// Insertar en una posición específica (0 = inicio, contador = final)
+public class Nodo {
+    int dato;
+    Nodo siguiente;
+
+    Nodo(int dato) {
+        this.dato = dato;
+        this.siguiente = null;
+    }
+}
+
+public class ListaCircular {
+
+    Nodo primero;
+    Nodo ultimo;
+    int contador = 0;
+
+    // ---------- Operaciones básicas (del ejercicio 1) ----------
+
+    public boolean estaVacia() {
+        return primero == null;
+    }
+
+    public void insertarInicio(int dato) {
+        Nodo nuevo = new Nodo(dato);
+
+        if (estaVacia()) {
+            primero = nuevo;
+            ultimo = nuevo;
+        } else {
+            nuevo.siguiente = primero;
+            primero = nuevo;
+        }
+
+        ultimo.siguiente = primero;
+        contador++;
+    }
+
+    public void insertarFinal(int dato) {
+        Nodo nuevo = new Nodo(dato);
+
+        if (estaVacia()) {
+            primero = nuevo;
+            ultimo = nuevo;
+        } else {
+            ultimo.siguiente = nuevo;
+            ultimo = nuevo;
+        }
+
+        ultimo.siguiente = primero;
+        contador++;
+    }
+
+    public void mostrar() {
+        if (estaVacia()) {
+            System.out.println("La lista está vacía.");
+            return;
+        }
+
+        Nodo actual = primero;
+        System.out.print("Lista circular: ");
+
+        do {
+            System.out.print(actual.dato + " -> ");
+            actual = actual.siguiente;
+        } while (actual != primero);
+
+        System.out.println("(vuelve al inicio)");
+    }
+
+    public int contarElementos() {
+        return contador;
+    }
+
+    // ---------- Operaciones nuevas (ejercicio 2) ----------
+
+    // Insertar en una posición específica (0 = inicio, contador = final)
     public void insertarPosicion(int dato, int posicion) {
-        if (posicion <= 0) { insertarInicio(dato); return; }
-        if (posicion >= contador) { insertarFinal(dato); return; }
- 
+        if (posicion <= 0) {
+            insertarInicio(dato);
+            return;
+        }
+
+        if (posicion >= contador) {
+            insertarFinal(dato);
+            return;
+        }
+
+        // Buscamos el nodo anterior a la posición deseada
         Nodo anterior = primero;
         for (int i = 0; i < posicion - 1; i++) {
             anterior = anterior.siguiente;
         }
+
         Nodo nuevo = new Nodo(dato);
         nuevo.siguiente = anterior.siguiente;
         anterior.siguiente = nuevo;
         contador++;
     }
- 
+
     // Eliminar por posición (0 = primer elemento)
     public void eliminarPosicion(int posicion) {
         if (estaVacia()) {
             System.out.println("No se puede eliminar: la lista está vacía.");
             return;
         }
+
         if (posicion < 0 || posicion >= contador) {
             System.out.println("Posición inválida.");
             return;
         }
+
+        // Caso: un solo nodo en la lista
         if (contador == 1) {
-            primero = null; ultimo = null; contador = 0;
+            primero = null;
+            ultimo = null;
+            contador = 0;
             return;
         }
+
+        // Caso: eliminar el primero
         if (posicion == 0) {
             primero = primero.siguiente;
-            ultimo.siguiente = primero;
+            ultimo.siguiente = primero; // el último debe apuntar al nuevo primero
             contador--;
             return;
         }
+
+        // Caso general: buscamos el nodo anterior al que vamos a eliminar
         Nodo anterior = primero;
         for (int i = 0; i < posicion - 1; i++) {
             anterior = anterior.siguiente;
         }
+
         Nodo aEliminar = anterior.siguiente;
         anterior.siguiente = aEliminar.siguiente;
-        if (aEliminar == ultimo) { ultimo = anterior; }
+
+        // Si eliminamos el último, actualizamos la referencia
+        if (aEliminar == ultimo) {
+            ultimo = anterior;
+        }
+
         contador--;
     }
- 
+
     // Eliminar por valor (elimina la primera ocurrencia)
     public void eliminarValor(int valor) {
         if (estaVacia()) {
             System.out.println("No se puede eliminar: la lista está vacía.");
             return;
         }
+
+        // Caso: un solo nodo
         if (contador == 1) {
             if (primero.dato == valor) {
-                primero = null; ultimo = null; contador = 0;
+                primero = null;
+                ultimo = null;
+                contador = 0;
             } else {
                 System.out.println("Valor no encontrado en la lista.");
             }
             return;
         }
+
+        // Caso: el valor está en el primer nodo
         if (primero.dato == valor) {
             primero = primero.siguiente;
             ultimo.siguiente = primero;
             contador--;
             return;
         }
+
+        // Caso general: recorremos buscando el valor
         Nodo anterior = primero;
         Nodo actual = primero.siguiente;
+
         while (actual != primero) {
             if (actual.dato == valor) {
                 anterior.siguiente = actual.siguiente;
-                if (actual == ultimo) { ultimo = anterior; }
+                if (actual == ultimo) {
+                    ultimo = anterior;
+                }
                 contador--;
                 return;
             }
             anterior = actual;
             actual = actual.siguiente;
         }
+
         System.out.println("Valor no encontrado en la lista.");
     }
+}
+}
+
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        ListaCircular lista = new ListaCircular();
+        Scanner scanner = new Scanner(System.in);
+        int opcion;
+
+        do {
+            System.out.println("\n===== MENÚ - LISTA CIRCULAR =====");
+            System.out.println("1. Insertar al inicio");
+            System.out.println("2. Insertar al final");
+            System.out.println("3. Insertar en una posición específica");
+            System.out.println("4. Eliminar por posición");
+            System.out.println("5. Eliminar por valor");
+            System.out.println("6. Mostrar todos los elementos");
+            System.out.println("7. Verificar si la lista está vacía");
+            System.out.println("8. Contar número de elementos");
+            System.out.println("9. Salir");
+            System.out.print("Elige una opción: ");
+            opcion = Integer.parseInt(scanner.nextLine());
+
+            switch (opcion) {
+                case 1:
+                    System.out.print("Ingresa el dato: ");
+                    int d1 = Integer.parseInt(scanner.nextLine());
+                    lista.insertarInicio(d1);
+                    System.out.println("Elemento insertado al inicio.");
+                    break;
+
+                case 2:
+                    System.out.print("Ingresa el dato: ");
+
+                    int d2 = Integer.parseInt(scanner.nextLine());
+                    lista.insertarFinal(d2);
+                    System.out.println("Elemento insertado al final.");
+                    break;
+
+                case 3:
+                    System.out.print("Ingresa el dato: ");
+                    int d3 = Integer.parseInt(scanner.nextLine());
+                    System.out.print("Ingresa la posición (0 = inicio): ");
+                    int pos = Integer.parseInt(scanner.nextLine());
+
+                    System.out.println("Antes de insertar:");
+                    lista.mostrar();
+
+                    lista.insertarPosicion(d3, pos);
+
+                    System.out.println("Después de insertar:");
+                    lista.mostrar();
+                    break;
+
+                case 4:
+                    System.out.print("Ingresa la posición a eliminar: ");
+                    int posEliminar = Integer.parseInt(scanner.nextLine());
+
+                    System.out.println("Antes de eliminar:");
+                    lista.mostrar();
+
+                    lista.eliminarPosicion(posEliminar);
+
+                    System.out.println("Después de eliminar:");
+                    lista.mostrar();
+                    break;
+
+
+                case 5:
+                    System.out.print("Ingresa el valor a eliminar: ");
+                    int valorEliminar = Integer.parseInt(scanner.nextLine());
+
+                    System.out.println("Antes de eliminar:");
+                    lista.mostrar();
+
+                    lista.eliminarValor(valorEliminar);
+
+                    System.out.println("Después de eliminar:");
+                    lista.mostrar();
+                    break;
+
+                case 6:
+                    lista.mostrar();
+                    break;
+
+                case 7:
+                    System.out.println(lista.estaVacia() ? "La lista está vacía." : "La lista NO está vacía.");
+                    break;
+
+                case 8:
+                    System.out.println("Número de elementos: " + lista.contarElementos());
+                    break;
+
+                case 9:
+                    System.out.println("Saliendo del programa...");
+                    break;
+
+                default:
+                    System.out.println("Opción no válida, intenta de nuevo.");
+
+            }
+
+        } while (opcion != 9);
+
+        scanner.close();
+    }
+}
